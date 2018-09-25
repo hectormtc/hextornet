@@ -80,6 +80,8 @@ def propagate():
 				dst = 'root' + usr + '/' + directory + '/' + 'hextornet.py'
 				copyfile(src, dst)
 				print'dst',dst
+			else:
+				dst = os.getcwd() + "hextornet.py"
 			directories.remove(directory)
 	print("=================================")
 
