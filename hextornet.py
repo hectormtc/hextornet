@@ -2,7 +2,7 @@
 
 from shutil import copyfile
 import os, getpass
-import os, random, sys, pkg_resources
+import random, sys, pkg_resources
 from urllib2 import urlopen
 import subprocess
 import shutil
